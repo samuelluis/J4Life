@@ -1,16 +1,35 @@
+import java.io.PrintStream;
+import utils.Logger;
 import models.Connection;
 
-
 public class J4Life {
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
 		Connection.getConnection();
 		
+		//TESTING LOGGER
+		/*Logger.config("Loggin in file J4Life");
+		Logger.config("Loggin in file J4Life.log 2.");
+		Logger.fine("Apps Initialized Successfully.");
+		Logger.finer("The Logger is working, it means that this class Logger is amazing to do this things");
+		Logger.finest("the table products was successfully created in J4Life.db by the next sentence: " +
+			"create table products(" +
+			"id integer primary key autoincrement," +
+			"name varchar(100)," +
+			"unit varchar(15)," +
+			"quantity integer," +
+			"price numeric(11,2)," +
+			"unit_price numeric(11,2)," +
+			"lp integer" +
+			"type varchar(30)," +
+			"category_id integer references categories(id)" +
+		")");
+		Logger.info("This App was Developed by Samuel Luis De La Cruz and Joel Abraham Espinal Carrasco.");
+		Logger.warning("The Database is at 95% of capacity, please do a clean up of it.");
+		try {
+			Integer.parseInt("Hola");
+		} catch (Exception e) {
+			Logger.severe(e.toString());
+			Logger.message(e.getMessage());
+		}*/
 	}
-
 }

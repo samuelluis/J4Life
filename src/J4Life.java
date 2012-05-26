@@ -1,3 +1,5 @@
+import models.Connection;
+
 
 public class J4Life {
 
@@ -7,6 +9,8 @@ public class J4Life {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
+		Connection.getConnection();
+		
 	}
 
 }

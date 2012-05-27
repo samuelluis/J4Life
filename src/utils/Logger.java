@@ -6,62 +6,54 @@ import java.util.logging.SimpleFormatter;
 
 public class Logger {
 	
-	private static java.util.logging.Logger logger = java.util.logging.Logger.getLogger("J4Life Log");
-	private static FileHandler fh;
+	private static java.util.logging.Logger logger;
 	
-	private static void setLevel(Level level) {
-		
-		
-		try {
-			if(fh==null){
-				fh = new FileHandler("J4Life.log", true);
-				logger.addHandler(fh);
-				SimpleFormatter formatter = new SimpleFormatter();
-				fh.setFormatter(formatter);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private static java.util.logging.Logger getLogger(Level level){
+		logger = java.util.logging.Logger.getLogger(capitalize(level.toString()).concat(" Log"));
 		logger.setLevel(level);
+		if(logger.getHandlers().length==0)
+			try {
+				FileHandler handler = new FileHandler("logs/".concat(capitalize(level.toString())).concat(".log"),true);
+				handler.setFormatter(new SimpleFormatter());
+				logger.addHandler(handler);
+			} catch (Exception e) {e.printStackTrace();}
+		return logger;
+	}
+	
+	private static String capitalize(String str){
+		return str.substring(0, 1).toUpperCase().concat(str.substring(1).toLowerCase());
 	}
 	
 	public static void info(String msg){
-		setLevel(Level.INFO);
-		logger.info(msg);
+		getLogger(Level.INFO).info(msg);
 	}
 	
 	public static void config(String msg){
-		setLevel(Level.CONFIG);
-		logger.config(msg);
+		getLogger(Level.CONFIG).config(msg);
 	}
 	
 	public static void fine(String msg){
-		setLevel(Level.FINE);
-		logger.fine(msg);
+		
+		getLogger(Level.FINE).fine(msg);
 	}
 	
 	public static void finer(String msg){
-		setLevel(Level.FINER);
-		logger.finer(msg);
+		getLogger(Level.FINER).finer(msg);
 	}
 	
 	public static void finest(String msg){
-		setLevel(Level.FINEST);
-		logger.finest(msg);
+		getLogger(Level.FINEST).finest(msg);
 	}
 	
 	public static void severe(String msg){
-		setLevel(Level.SEVERE);
-		logger.severe(msg);
+		getLogger(Level.SEVERE).severe(msg);
 	}
 	
 	public static void warning(String msg){
-		setLevel(Level.WARNING);
-		logger.warning(msg);
+		getLogger(Level.WARNING).warning(msg);
 	}
 	
 	public static void message(String msg){
-		setLevel(Level.ALL);
-		logger.log(Level.ALL,msg);
+		getLogger(Level.ALL).log(Level.ALL,msg);
 	}
 }

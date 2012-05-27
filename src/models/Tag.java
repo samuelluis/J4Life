@@ -6,28 +6,28 @@ import java.util.List;
 
 import utils.Logger;
 
-public class Category implements IModel {
+public class Tag implements IModel {
 
 	private int id;
 	private String name;
 	
-	public Category() {
+	public Tag() {
 		this(null);
 	}
 
-	public Category(String name) {
+	public Tag(String name) {
 		super();
 		this.id = 0;
 		this.name = name;
 	}
 	
-	public static Category create() {
+	public static Tag create() {
 		return create(null);
 	}
 
-	public static Category create(String name) {
-		Category category = new Category(name);
-		return category.save() ? category : null;
+	public static Tag create(String name) {
+		Tag tag = new Tag(name);
+		return tag.save() ? tag : null;
 	}
 
 	public int getId() {
@@ -36,7 +36,7 @@ public class Category implements IModel {
 
 	public void setId() {
 		try { 
-			ResultSet result = Connection.getConnection().excecuteQuery("select max(id) from categories");
+			ResultSet result = Connection.getConnection().excecuteQuery("select max(id) from tags");
 			result.next();
 			this.id = result.getInt(1);
 		}
@@ -52,54 +52,54 @@ public class Category implements IModel {
 		this.name = name;
 	}
 	
-	public static Category find(int id){
-		Category category = new Category();
+	public static Tag find(int id){
+		Tag tag = new Tag();
 		try { 
-			ResultSet result = Connection.getConnection().excecuteQuery("select * from categories where id="+id);
+			ResultSet result = Connection.getConnection().excecuteQuery("select * from tags where id="+id);
 			if(result.next()){
-				category.id = id;
-				category.name = result.getString("name");
+				tag.id = id;
+				tag.name = result.getString("name");
 			}
 			else
-				Logger.warning("Couldn't find Category with id: "+id);
+				Logger.warning("Couldn't find tag with id: "+id);
 		}
 		catch (Exception e) { Logger.severe("Couldn't complete the search: "+e.toString()); }
 		
-		return category;
+		return tag;
 	}
 	
-	public static List<Category> all(){
-		List<Category> categories = new ArrayList<Category>();
+	public static List<Tag> all(){
+		List<Tag> tags = new ArrayList<Tag>();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select id from categories");
-			while(result.next()) categories.add(find(result.getInt("id")));
+			ResultSet result = Connection.getConnection().excecuteQuery("select id from tags");
+			while(result.next()) tags.add(find(result.getInt("id")));
 		} catch (Exception e) { Logger.severe("Couldn't complete the search: "+e.toString()); }
-		return categories;
+		return tags;
 	}
 
 	@Override
 	public boolean save() {
 		String sql = "";
-		if(id==0) sql = "insert into categories(`name`) values('"+name+"')";
-		else sql = "update categories set name='"+name+"' where id="+id;
+		if(id==0) sql = "insert into tags(`name`) values('"+name+"')";
+		else sql = "update tags set name='"+name+"' where id="+id;
 		try { Connection.getConnection().excecuteUpdate(sql); if(id==0) setId(); return true; }
 		catch (Exception e) { Logger.severe("Couldn't Save: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 
 	@Override
 	public boolean destroy() {
-		try { Connection.getConnection().excecuteUpdate("delete from categories where id="+id); return true; }
+		try { Connection.getConnection().excecuteUpdate("delete from tags where id="+id); return true; }
 		catch (Exception e) { Logger.severe("Couldn't Delete: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 	
 	public static void destroyAll(){
-		for(Category category : Category.all())
-			category.destroy();
+		for(Tag tag : Tag.all())
+			tag.destroy();
 	}
 
 	@Override
 	public String attributes() {
-		return "Category [ id="+id+", name="+name+" ]";
+		return "tags [ id="+id+", name="+name+" ]";
 	}
 	
 	@Override

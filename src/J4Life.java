@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import utils.Logger;
 import models.Category;
 import models.Connection;
+import models.Tag;
 
 public class J4Life {
 	public static void main(String[] args) {
@@ -34,6 +35,17 @@ public class J4Life {
 			Logger.severe(e.toString());
 			Logger.message(e.getMessage());
 		}*/
+		
+		// TESTING TAGS
+		/*
+		Tag tag = new Tag("Recall");
+		System.out.println(tag.getId() + tag.getName());
+		System.out.println(tag.attributes());
+		System.out.println(tag.destroy());
+		*/
+		
+		
+		
 		Connection.getConnection().close();
 	}
 }

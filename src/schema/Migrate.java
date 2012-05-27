@@ -32,7 +32,6 @@ public class Migrate extends HashMap<String, String>{
 		put("categories","create table categories(" +
 			"id integer primary key autoincrement," +
 			"name varchar(30) unique," +
-			"alias varchar(5)," +
 			"created_at datetime," +
 			"updated_at datetime" +
 		")");
@@ -52,7 +51,6 @@ public class Migrate extends HashMap<String, String>{
 		put("tags","create table tags(" +
 			"id integer primary key autoincrement," +
 			"name varchar(50)," +
-			"alias varchar(5)," +
 			"created_at datetime," +
 			"updated_at datetime" +
 		")");

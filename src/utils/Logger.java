@@ -26,31 +26,37 @@ public class Logger {
 	
 	public static void info(String msg){
 		getLogger(Level.INFO).info(msg);
+		message(msg);
 	}
 	
 	public static void config(String msg){
 		getLogger(Level.CONFIG).config(msg);
+		message(msg);
 	}
 	
 	public static void fine(String msg){
-		
 		getLogger(Level.FINE).fine(msg);
+		message(msg);
 	}
 	
 	public static void finer(String msg){
 		getLogger(Level.FINER).finer(msg);
+		message(msg);
 	}
 	
 	public static void finest(String msg){
 		getLogger(Level.FINEST).finest(msg);
+		message(msg);
 	}
 	
 	public static void severe(String msg){
 		getLogger(Level.SEVERE).severe(msg);
+		message(msg);
 	}
 	
 	public static void warning(String msg){
 		getLogger(Level.WARNING).warning(msg);
+		message(msg);
 	}
 	
 	public static void message(String msg){

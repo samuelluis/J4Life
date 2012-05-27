@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Map.Entry;
 
 import schema.Migrate;
+import schema.Seed;
 import utils.Logger;
 
 public class Connection {
@@ -30,31 +31,34 @@ public class Connection {
 	
 	public void migrate(){
 		Migrate tables = new Migrate();
+		boolean runSeed = false;
 		for (Entry<String, String> table : tables.entrySet())
 			try{
 				connection.createStatement().executeUpdate(table.getValue());
 				Logger.fine(table.getKey().concat(" table was successfully created."));
+				runSeed = true;
 			}catch(SQLException e){
 				if(e.getMessage().endsWith("already exists"))
 					Logger.warning(e.toString());
 				else
 					Logger.severe(e.toString().concat(" by excecuting sentence: ").concat(table.getValue()));
 			}
+		if(runSeed) Seed.seed();
 	}
 	
-	public void excecuteUpdate(String sql){
+	public void excecuteUpdate(String sql) throws SQLException{
+		connection.createStatement().executeUpdate(sql);
+	}
+	
+	public ResultSet excecuteQuery(String sql) throws SQLException{
+		return connection.createStatement().executeQuery(sql);
+	}
+	
+	public void close(){
 		try {
-			connection.createStatement().executeUpdate(sql);
+			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-	}
-	
-	public ResultSet excecuteQuery(String sql){
-		try {
-			return connection.createStatement().executeQuery(sql);
-		} catch (SQLException e) {
-			return null;
 		}
 	}
 }

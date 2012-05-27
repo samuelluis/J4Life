@@ -3,8 +3,10 @@ package models;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map.Entry;
 
-import schema.Tables;
+import schema.Migrate;
+import utils.Logger;
 
 public class Connection {
 	public static Connection instance;
@@ -14,9 +16,10 @@ public class Connection {
 		try{
 			Class.forName("org.sqlite.JDBC");
 			connection = DriverManager.getConnection("jdbc:sqlite:J4Life.db");
-			createTables();
+			Logger.fine("Database was Successfully Connected!");
+			migrate();
 		}catch(Exception e){
-			e.printStackTrace();
+			Logger.severe("Error to Connect Database: ".concat(e.toString()));
 		}
 	}
 	
@@ -25,16 +28,18 @@ public class Connection {
 		return instance;
 	}
 	
-	public void createTables(){
-		Tables tables = new Tables();
-		for (String table : tables) {
+	public void migrate(){
+		Migrate tables = new Migrate();
+		for (Entry<String, String> table : tables.entrySet())
 			try{
-				connection.createStatement().executeUpdate(table);
+				connection.createStatement().executeUpdate(table.getValue());
+				Logger.fine(table.getKey().concat(" table was successfully created."));
 			}catch(SQLException e){
-				e.printStackTrace();
-				System.out.println(table);
+				if(e.getMessage().endsWith("already exists"))
+					Logger.warning(e.toString());
+				else
+					Logger.severe(e.toString().concat(" by excecuting sentence: ").concat(table.getValue()));
 			}
-		}
 	}
 	
 	public void excecuteUpdate(String sql){

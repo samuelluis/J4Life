@@ -1,10 +1,12 @@
 import java.io.PrintStream;
+import java.util.logging.Level;
+
 import utils.Logger;
 import models.Connection;
 
 public class J4Life {
 	public static void main(String[] args) {
-		Connection.getConnection();
+		//Connection.getConnection();
 		
 		//TESTING LOGGER
 		/*Logger.config("Loggin in file J4Life");

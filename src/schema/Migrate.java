@@ -1,33 +1,34 @@
 package schema;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
-public class Tables extends ArrayList<String>{
+@SuppressWarnings("serial")
+public class Migrate extends HashMap<String, String>{
 
-	public Tables(){
-		add("create table countries(" +
+	public Migrate(){
+		put("countries","create table countries(" +
 			"id integer primary key autoincrement," +
 			"name varchar(30) unique," +
 			"alias varchar(5)" +
 		")");
-		add("create table states(" +
+		put("states","create table states(" +
 			"id integer primary key autoincrement," +
 			"name varchar(30) unique," +
 			"alias varchar(5)," +
 			"country_id intenger references countries(id)" +
 		")");
-		add("create table cities(" +
+		put("cities","create table cities(" +
 			"id integer primary key autoincrement," +
 			"name varchar(30) unique," +
 			"alias varchar(5)," +
 			"state_id integer references states(id)" +
 		")");
-		add("create table categories(" +
+		put("categories","create table categories(" +
 			"id integer primary key autoincrement," +
 			"name varchar(30) unique," +
 			"alias varchar(5)" +
 		")");
-		add("create table products(" +
+		put("products","create table products(" +
 			"id integer primary key autoincrement," +
 			"name varchar(100)," +
 			"unit varchar(15)," +
@@ -38,24 +39,24 @@ public class Tables extends ArrayList<String>{
 			"type varchar(30)," +
 			"category_id integer references categories(id)" +
 		")");
-		add("create table tags(" +
+		put("tags","create table tags(" +
 			"id integer primary key autoincrement," +
 			"name varchar(50)," +
 			"alias varchar(5)" +
 		")");
-		add("create table products_tags(" +
+		put("products_tags","create table products_tags(" +
 			"product_id integer references products(id)," +
 			"tag_id integer references tags(id)," +
 			"primary key (product_id, tag_id)" +
 		")");
-		add("create table address(" +
+		put("address","create table address(" +
 			"id integer primary key autoincrement,"+
 			"street varchar(50)," +
 			"number integer," +
 			"city_id integer references cities(id)," +
 			"zip_code varchar(10)" +
 		")");
-		add("create table people(" +
+		put("people","create table people(" +
 			"id integer primary key autoincrement," +
 			"name varchar(50)," +
 			"last_name varchar(50)," +
@@ -64,48 +65,48 @@ public class Tables extends ArrayList<String>{
 			"phone varchar(15)," +
 			"cel_phone varchar(15)" +
 		")");
-		add("create table users(" +
+		put("users","create table users(" +
 			"id integer primary key autoincrement," +
 			"email varchar(100)," +
 			"user_name varchar(50)," +
 			"password varchar(50)," +
 			"person_id integer references people(id)" +
 		")");
-		add("create table roles(" +
+		put("roles","create table roles(" +
 			"id integer primary key autoincrement," +
 			"name varchar(50)," +
 			"alias varchar(50)" +
 		")");
-		add("create table roles_users(" +
+		put("roles_users","create table roles_users(" +
 			"user_id integer references users(id)," +
 			"role_id integer references roles(id)," +
 			"primary key(user_id, role_id)" +
 		")");
-		add("create table branches(" +
+		put("branches","create table branches(" +
 			"id integer primary key autoincrement," +
 			"address_id integer references address(id)," +
 			"person_id integer references people(id)" +
 		")");
-		add("create table products_branches(" +
+		put("products_branches","create table products_branches(" +
 			"product_id integer references products(id)," +
 			"branch_id integer references branches(id)," +
 			"unit integer," +
 			"primary key(product_id, branch_id)" +
 		")");
-		add("create table branches_users(" +
+		put("branches_users","create table branches_users(" +
 			"branch_id integer references branches," +
 			"user_id integer references users," +
 			"primary key(branch_id,user_id)" +
 		")");
-		add("create table clients(" +
+		put("clients","create table clients(" +
 			"id integer primary key," +
 			"person_id integer references people(id)" +
 		")");
-		add("create table partners(" +
+		put("partners","create table partners(" +
 			"id integer primary key autoincrement," +
 			"code varchar(50)" +
 		")");
-		add("create table bills(" +
+		put("bills","create table bills(" +
 			"id integer primary key autoincrement," +
 			"efective_date date," +
 			"user_id integer references users(id)," +
@@ -114,7 +115,7 @@ public class Tables extends ArrayList<String>{
 			"branch_id integer references branches(id)," +
 			"units integer" +
 		")");
-		add("create table bills_products(" +
+		put("bills_products","create table bills_products(" +
 			"product_id integer references products(id)," +
 			"bill_id integer references bills(id)," +
 			"quantity integer," +

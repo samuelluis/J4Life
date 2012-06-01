@@ -11,18 +11,14 @@ public class Category implements IModel {
 	private int id;
 	private String name;
 	
-	public Category() {
-		this(null);
+	private Category() {
+		this("");
 	}
 
 	public Category(String name) {
 		super();
 		this.id = 0;
 		this.name = name;
-	}
-	
-	public static Category create() {
-		return create(null);
 	}
 
 	public static Category create(String name) {
@@ -63,7 +59,7 @@ public class Category implements IModel {
 			else
 				Logger.warning("Couldn't find Category with id: "+id);
 		}
-		catch (Exception e) { Logger.severe("Couldn't complete the search: "+e.toString()); }
+		catch (Exception e) { Logger.severe("Couldn't complete the search of Category: "+e.toString()); }
 		
 		return category;
 	}
@@ -73,7 +69,7 @@ public class Category implements IModel {
 		try {
 			ResultSet result = Connection.getConnection().excecuteQuery("select id from categories");
 			while(result.next()) categories.add(find(result.getInt("id")));
-		} catch (Exception e) { Logger.severe("Couldn't complete the search: "+e.toString()); }
+		} catch (Exception e) { Logger.severe("Couldn't complete the search of Categories: "+e.toString()); }
 		return categories;
 	}
 
@@ -99,7 +95,7 @@ public class Category implements IModel {
 
 	@Override
 	public String attributes() {
-		return "Category [ id="+id+", name="+name+" ]";
+		return "Category [ id="+id+", name='"+name+"' ]";
 	}
 	
 	@Override

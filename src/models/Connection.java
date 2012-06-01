@@ -10,7 +10,7 @@ import schema.Seed;
 import utils.Logger;
 
 public class Connection {
-	public static Connection instance;
+	private static Connection instance;
 	private java.sql.Connection connection;
 	
 	private Connection(){

@@ -1,14 +1,10 @@
-import java.io.PrintStream;
-import java.util.logging.Level;
+import java.util.Date;
 
-import utils.Logger;
-import models.Category;
-import models.Connection;
-import models.Tag;
+import utils.DateHelper;
 
 public class J4Life {
 	public static void main(String[] args) {
-		Connection.getConnection();
+		//Connection.getConnection();
 		
 		//TESTING LOGGER
 		/*Logger.config("Loggin in file J4Life");
@@ -43,9 +39,12 @@ public class J4Life {
 		System.out.println(tag.attributes());
 		System.out.println(tag.destroy());
 		*/
+		//TESTING COUNTRIES
+		//Country country = new Country("Domimican Republic");
 		
+		System.out.println(DateHelper.getDateString(new Date()));
+		System.out.println(DateHelper.getDateTimeString(new Date()));
 		
-		
-		Connection.getConnection().close();
+		//Connection.getConnection().close();
 	}
 }

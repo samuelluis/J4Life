@@ -140,7 +140,7 @@ public class Migrate extends HashMap<String, String>{
 		")");
 		put("bills","create table bills(" +
 			"id integer primary key autoincrement," +
-			"efective_date date," +
+			"effective_date date," +
 			"user_id integer references users(id)," +
 			"client_id integer references clients(id)," +
 			"partner_id integer references partners(id)," +

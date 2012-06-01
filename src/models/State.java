@@ -1,7 +1,10 @@
 package models;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+
+import utils.Logger;
 
 public class State implements IModel {
 	
@@ -19,16 +22,32 @@ public class State implements IModel {
 	}
 	
 	public State(String name, String alias, int countryId){
+		super();
 		this.id = 0;
 		this.name = name;
 		this.alias = alias;
 		this.countryId = countryId;
 	}
-
+	public static State create() {
+		return create(null, null, 0);
+	}
+	public static State create(String name,String alias,int countryId) {
+		State state = new State( name, alias, countryId);
+		return state.save() ? state : null;
+	}
+	
 	public int getId() {
 		return id;
 	}
-	
+	public void setId() {
+		try { 
+			ResultSet result = Connection.getConnection().excecuteQuery("select max(id) from states");
+			result.next();
+			this.id = result.getInt(1);
+		}
+		catch (Exception e) {}
+	}
+
 	@Override
 	public String getName() {
 		return name;
@@ -64,19 +83,36 @@ public class State implements IModel {
 	
 	public static State find(int id){
 		State state = new State();
+		try { 
+			ResultSet result = Connection.getConnection().excecuteQuery("select * from states where id="+id);
+			if(result.next()){
+				state.id = id;
+				state.name = result.getString("name");
+			}
+			else
+				Logger.warning("Couldn't find tag with id: "+id);
+		}
+		catch (Exception e) { Logger.severe("Couldn't complete the search: "+e.toString()); }
 		
 		return state;
 	}
 	
 	public static List<State> all(){
 		List<State> states = new ArrayList<State>();
-		
+		try {
+			ResultSet result = Connection.getConnection().excecuteQuery("select id from states");
+			while(result.next()) states.add(find(result.getInt("id")));
+		} catch (Exception e) { Logger.severe("Couldn't complete the search: "+e.toString()); }
 		return states;
 	}
 	
 	@Override
 	public boolean save() {
-		return true;
+		String sql = "";
+		if(id==0) sql = "insert into states(`name`) values('"+name+"')";
+		else sql = "update tags set name='"+name+"' where id="+id;
+		try { Connection.getConnection().excecuteUpdate(sql); if(id==0) setId(); return true; }
+		catch (Exception e) { Logger.severe("Couldn't Save: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 
 	@Override

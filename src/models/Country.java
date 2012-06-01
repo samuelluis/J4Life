@@ -106,5 +106,8 @@ public class Country implements IModel {
 	public String toString() {
 		return getName();
 	}
-
+	public List <State> getStates(){
+		List<State> states = new ArrayList<State>();
+		return states;
+	}
 }

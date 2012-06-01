@@ -63,10 +63,13 @@ public class City implements IModel {
 		return id;
 	}
 
-	private void setId() {
+	private void afterSave() {
 		try {
 			ResultSet result = Connection.getConnection().excecuteQuery("select max(id) from cities");
 			id = result.getInt(1);
+			City city = City.find(id);
+			this.createdAt = city.createdAt;
+			this.updatedAt = city.updatedAt;
 		} catch (SQLException e) {}
 	}
 	
@@ -103,6 +106,22 @@ public class City implements IModel {
 		stateId = state.getId();
 	}
 
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
 	public static City find(int id){
 		City city = new City();
 		try {
@@ -112,6 +131,8 @@ public class City implements IModel {
 				city.name = result.getString("name");
 				city.alias = result.getString("alias");
 				city.stateId = result.getInt("state_id");
+				city.createdAt = result.getDate("created_at");
+				city.updatedAt = result.getDate("updated_at");
 			}
 			else
 				Logger.warning("Couldn't find City with id: "+id);
@@ -135,9 +156,9 @@ public class City implements IModel {
 	@Override
 	public boolean save() {
 		String sql = "";
-		if(id == 0) sql = "insert into cities(`name`,`alias`,`state_id`) values('"+name+"','"+alias+"',"+stateId+")";
-		else sql = "update from cities set name="+name+", alias="+alias+", state_id="+stateId+" where id="+id;
-		try{Connection.getConnection().excecuteUpdate(sql); if(id == 0) setId(); return true;}
+		if(id == 0) sql = "insert into cities(`name`,`alias`,`state_id`,`created_at`,`updated_at`) values('"+name+"','"+alias+"',"+stateId+",'"+DateHelper.getDateTimeString(new Date())+"','"+DateHelper.getDateTimeString(new Date())+"')";
+		else sql = "update cities set name='"+name+"', alias='"+alias+"', state_id="+stateId+", updated_at='"+DateHelper.getDateTimeString(new Date())+"' where id="+id;
+		try{Connection.getConnection().excecuteUpdate(sql); if(id == 0) afterSave(); return true;}
 		catch (Exception e) { Logger.severe("Couldn't Save: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 
@@ -154,7 +175,7 @@ public class City implements IModel {
 	@Override
 	public String attributes(){
 		return "City [ id="+id+", name='"+name+"', alias='"+alias+"', state_id="+stateId+", " +
-				"created_at="+DateHelper.getDateString(createdAt)+", updated_at="+DateHelper.getDateString(updatedAt)+" ]";
+				"created_at="+DateHelper.getDateTimeString(createdAt)+", updated_at="+DateHelper.getDateTimeString(updatedAt)+" ]";
 	}
 	
 	@Override

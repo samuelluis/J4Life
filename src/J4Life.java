@@ -1,10 +1,9 @@
-import java.util.Date;
+import models.Connection;
 
-import utils.DateHelper;
 
 public class J4Life {
 	public static void main(String[] args) {
-		//Connection.getConnection();
+		Connection.getConnection();
 		
 		//TESTING LOGGER
 		/*Logger.config("Loggin in file J4Life");
@@ -42,9 +41,6 @@ public class J4Life {
 		//TESTING COUNTRIES
 		//Country country = new Country("Domimican Republic");
 		
-		System.out.println(DateHelper.getDateString(new Date()));
-		System.out.println(DateHelper.getDateTimeString(new Date()));
-		
-		//Connection.getConnection().close();
+		Connection.getConnection().close();
 	}
 }

@@ -190,5 +190,20 @@ public class State implements IModel {
 	public String toString() {
 		return getName();
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return (!isNew() && id==((State)obj).id);
+	}
+	
+	@Override
+	public int hashCode() {
+		return id;
+	}
+	
+	@Override
+	public boolean isNew() {
+		return id==0;
+	}
 
 }

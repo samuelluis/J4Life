@@ -159,4 +159,19 @@ public class Country implements IModel {
 	public String toString() {
 		return getName();
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return (!isNew() && id==((Country)obj).id);
+	}
+	
+	@Override
+	public int hashCode() {
+		return id;
+	}
+	
+	@Override
+	public boolean isNew() {
+		return id==0;
+	}
 }

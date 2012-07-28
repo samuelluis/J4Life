@@ -83,9 +83,9 @@ public class Migrate extends HashMap<String, String>{
 		")");
 		put("users","create table users(" +
 			"id integer primary key autoincrement," +
-			"email varchar(100)," +
-			"username varchar(50)," +
-			"password varchar(50)," +
+			"email varchar(100) unique," +
+			"username varchar(50) unique," +
+			"password varchar(255)," +
 			"person_id integer references people(id)," +
 			"created_at datetime," +
 			"updated_at datetime" +

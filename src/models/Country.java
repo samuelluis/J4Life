@@ -46,8 +46,8 @@ public class Country implements IModel {
 
 	private void afterSave() {
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select max(id) from countries");
-			id = result.getInt(1);
+			ResultSet result = Connection.getConnection().executeQuery("select max(id) from countries");
+			if(result!=null) id = result.getInt(1);
 			Country country = Country.find(id);
 			this.createdAt = country.createdAt;
 			this.updatedAt = country.updatedAt;
@@ -90,8 +90,8 @@ public class Country implements IModel {
 	public static Country find(int id){
 		Country country = new Country();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select * from countries where id="+id);
-			if(result.next()){
+			ResultSet result = Connection.getConnection().executeQuery("select * from countries where id="+id, "Couldn't complete the search of Country: ");
+			if(result!=null && result.next()){
 				country.id = id;
 				country.name = result.getString("name");
 				country.alias = result.getString("alias");
@@ -110,17 +110,17 @@ public class Country implements IModel {
 	public static List<Country> all(){
 		List<Country> countries = new ArrayList<Country>();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select id from countries");
-			while(result.next()) countries.add(find(result.getInt("id")));
-		} catch (Exception e) { Logger.severe("Couldn't complete the search of Country: "+e.toString()); }
+			ResultSet result = Connection.getConnection().executeQuery("select id from countries", "Couldn't complete the search of Countries: ");
+			while(result!=null && result.next()) countries.add(find(result.getInt("id")));
+		} catch (Exception e) { Logger.severe("Couldn't complete the search of Countries: "+e.toString()); }
 		return countries;
 	}
 	
 	public List<State> getStates(){
 		List<State> states = new ArrayList<State>();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select id from states where country_id="+id);
-			while(result.next()) states.add(State.find(result.getInt("id")));
+			ResultSet result = Connection.getConnection().executeQuery("select id from states where country_id="+id, "Couldn't complete the search of States: ");
+			while(result!=null && result.next()) states.add(State.find(result.getInt("id")));
 		} catch (Exception e) { Logger.severe("Couldn't complete the search of States: "+e.toString()); }
 		return states;
 	}
@@ -136,13 +136,13 @@ public class Country implements IModel {
 		String sql = "";
 		if(id == 0) sql = "insert into countries(`name`,`alias`,`created_at`,`updated_at`) values('"+name+"','"+alias+"','"+DateHelper.getDateTimeString(new Date())+"','"+DateHelper.getDateTimeString(new Date())+"')";
 		else sql = "update countries set name='"+name+"', alias='"+alias+"', updated_at='"+DateHelper.getDateTimeString(new Date())+"' where id="+id;
-		try{Connection.getConnection().excecuteUpdate(sql); if(id == 0) afterSave(); return true;}
+		try{boolean result = Connection.getConnection().executeUpdate(sql, "Couldn't Save: ".concat(attributes()).concat("\nReason: ")); if(result && id == 0) afterSave(); return result;}
 		catch (Exception e) { Logger.severe("Couldn't Save: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 
 	@Override
 	public boolean destroy() {
-		try {Connection.getConnection().excecuteUpdate("delete from countries where id="+id); return true;} 
+		try {boolean result = Connection.getConnection().executeUpdate("delete from countries where id="+id, "Couldn't Delete: ".concat(attributes()).concat("\nReason: ")); return result;} 
 		catch (Exception e) { Logger.severe("Couldn't Delete: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 	

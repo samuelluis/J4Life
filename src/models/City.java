@@ -65,8 +65,8 @@ public class City implements IModel {
 
 	private void afterSave() {
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select max(id) from cities");
-			id = result.getInt(1);
+			ResultSet result = Connection.getConnection().executeQuery("select max(id) from cities");
+			if(result!=null) id = result.getInt(1);
 			City city = City.find(id);
 			this.createdAt = city.createdAt;
 			this.updatedAt = city.updatedAt;
@@ -125,8 +125,8 @@ public class City implements IModel {
 	public static City find(int id){
 		City city = new City();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select * from cities where id = " + id);
-			if(result.next()){
+			ResultSet result = Connection.getConnection().executeQuery("select * from cities where id = " + id, "Couldn't complete the search of City: ");
+			if(result!=null && result.next()){
 				city.id = id;
 				city.name = result.getString("name");
 				city.alias = result.getString("alias");
@@ -146,8 +146,8 @@ public class City implements IModel {
 	public static List<City> all(){
 		List<City> cities = new ArrayList<City>();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select id from cities");
-			while(result.next()) cities.add(find(result.getInt("id")));
+			ResultSet result = Connection.getConnection().executeQuery("select id from cities", "Couldn't complete the search of Cities: ");
+			while(result!=null && result.next()) cities.add(find(result.getInt("id")));
 			
 		} catch (Exception e) { Logger.severe("Couldn't complete the search of Cities: "+e.toString()); }
 		return cities;
@@ -158,13 +158,13 @@ public class City implements IModel {
 		String sql = "";
 		if(id == 0) sql = "insert into cities(`name`,`alias`,`state_id`,`created_at`,`updated_at`) values('"+name+"','"+alias+"',"+stateId+",'"+DateHelper.getDateTimeString(new Date())+"','"+DateHelper.getDateTimeString(new Date())+"')";
 		else sql = "update cities set name='"+name+"', alias='"+alias+"', state_id="+stateId+", updated_at='"+DateHelper.getDateTimeString(new Date())+"' where id="+id;
-		try{Connection.getConnection().excecuteUpdate(sql); if(id == 0) afterSave(); return true;}
+		try{boolean result = Connection.getConnection().executeUpdate(sql, "Couldn't Save: ".concat(attributes()).concat("\nReason: ")); if(result && id == 0) afterSave(); return result;}
 		catch (Exception e) { Logger.severe("Couldn't Save: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 
 	@Override
 	public boolean destroy() {
-		try {Connection.getConnection().excecuteUpdate("delete from cities where id="+id); return true;} 
+		try {boolean result = Connection.getConnection().executeUpdate("delete from cities where id="+id, "Couldn't Delete: ".concat(attributes()).concat("\nReason: ")); return result;} 
 		catch (Exception e) { Logger.severe("Couldn't Delete: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 	

@@ -66,13 +66,11 @@ public class Address implements IModel {
 	}
 
 	private void afterSave() {
-		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select max(id) from addresses");
-			id = result.getInt(1);
-			Address address = Address.find(id);
-			this.createdAt = address.createdAt;
-			this.updatedAt = address.updatedAt;
-		} catch (SQLException e) {}
+		ResultSet result = Connection.getConnection().executeQuery("select max(id) from addresses");
+		try {if(result !=null) id = result.getInt(1);} catch (SQLException e) {}
+		Address address = Address.find(id);
+		this.createdAt = address.createdAt;
+		this.updatedAt = address.updatedAt;
 	}
 	
 	@Override
@@ -139,8 +137,8 @@ public class Address implements IModel {
 	public static Address find(int id){
 		Address address = new Address();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select * from addresses where id = " + id);
-			if(result.next()){
+			ResultSet result = Connection.getConnection().executeQuery("select * from addresses where id = " + id, "Couldn't complete the search of Address: ");
+			if(result!=null && result.next()){
 				address.id = id;
 				address.street = result.getString("street");
 				address.number = result.getString("number");
@@ -161,8 +159,8 @@ public class Address implements IModel {
 	public static List<Address> all(){
 		List<Address> addresses = new ArrayList<Address>();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select id from addresses");
-			while(result.next()) addresses.add(find(result.getInt("id")));
+			ResultSet result = Connection.getConnection().executeQuery("select id from addresses", "Couldn't complete the search of Addresses: ");
+			while(result!=null && result.next()) addresses.add(find(result.getInt("id")));
 			
 		} catch (Exception e) { Logger.severe("Couldn't complete the search of Addresses: "+e.toString()); }
 		return addresses;
@@ -173,13 +171,13 @@ public class Address implements IModel {
 		String sql = "";
 		if(id == 0) sql = "insert into addresses(`street`,`number`,`zipcode`,`city_id`,`created_at`,`updated_at`) values('"+street+"','"+number+"','"+zipcode+"',"+cityId+",'"+DateHelper.getDateTimeString(new Date())+"','"+DateHelper.getDateTimeString(new Date())+"')";
 		else sql = "update addresses set street='"+street+"', number='"+number+"', zipcode='"+zipcode+"', city_id="+cityId+", updated_at='"+DateHelper.getDateTimeString(new Date())+"' where id="+id;
-		try{Connection.getConnection().excecuteUpdate(sql); if(id == 0) afterSave(); return true;}
+		try{boolean result = Connection.getConnection().executeUpdate(sql, "Couldn't Save: ".concat(attributes()).concat("\nReason: ")); if(result && id == 0) afterSave(); return result;}
 		catch (Exception e) { Logger.severe("Couldn't Save: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 
 	@Override
 	public boolean destroy() {
-		try {Connection.getConnection().excecuteUpdate("delete from addresses where id="+id); return true;} 
+		try {boolean result = Connection.getConnection().executeUpdate("delete from addresses where id="+id, "Couldn't Delete: ".concat(attributes()).concat("\nReason: ")); return result;} 
 		catch (Exception e) { Logger.severe("Couldn't Delete: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 	

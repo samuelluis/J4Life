@@ -54,8 +54,8 @@ public class Person implements IModel {
 
 	private void afterSave() {
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select max(id) from people");
-			id = result.getInt(1);
+			ResultSet result = Connection.getConnection().executeQuery("select max(id) from people");
+			if(result!=null) id = result.getInt(1);
 			Person person = Person.find(id);
 			this.createdAt = person.createdAt;
 			this.updatedAt = person.updatedAt;
@@ -129,8 +129,8 @@ public class Person implements IModel {
 	public static Person find(int id){
 		Person person = new Person();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select * from people where id = " + id);
-			if(result.next()){
+			ResultSet result = Connection.getConnection().executeQuery("select * from people where id = " + id, "Couldn't complete the search of Person: ");
+			if(result!=null && result.next()){
 				person.id = id;
 				person.name = result.getString("name");
 				person.lastName = result.getString("last_name");
@@ -153,8 +153,8 @@ public class Person implements IModel {
 	public static List<Person> all(){
 		List<Person> people = new ArrayList<Person>();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select id from people");
-			while(result.next()) people.add(find(result.getInt("id")));
+			ResultSet result = Connection.getConnection().executeQuery("select id from people", "Couldn't complete the search of People: ");
+			while(result!=null && result.next()) people.add(find(result.getInt("id")));
 			
 		} catch (Exception e) { Logger.severe("Couldn't complete the search of People: "+e.toString()); }
 		return people;
@@ -165,13 +165,13 @@ public class Person implements IModel {
 		String sql = "";
 		if(id == 0) sql = "insert into people(`name`,`last_name`,`identifier`,`dob`,`phone`,`cel_phone`,`created_at`,`updated_at`) values('"+name+"','"+lastName+"','"+identifier+"',"+dob+",'"+phone+"','"+celPhone+"','"+DateHelper.getDateTimeString(new Date())+"','"+DateHelper.getDateTimeString(new Date())+"')";
 		else sql = "update people set name='"+name+"', last_name='"+lastName+"', identifier='"+identifier+"', dob="+dob+", phone='"+phone+"', cel_phone='"+celPhone+"', updated_at='"+DateHelper.getDateTimeString(new Date())+"' where id="+id;
-		try{Connection.getConnection().excecuteUpdate(sql); if(id == 0) afterSave(); return true;}
+		try{boolean result = Connection.getConnection().executeUpdate(sql, "Couldn't Save: ".concat(attributes()).concat("\nReason: ")); if(result && id == 0) afterSave(); return result;}
 		catch (Exception e) { Logger.severe("Couldn't Save: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 
 	@Override
 	public boolean destroy() {
-		try {Connection.getConnection().excecuteUpdate("delete from people where id="+id); return true;} 
+		try {boolean result = Connection.getConnection().executeUpdate("delete from people where id="+id, "Couldn't Delete: ".concat(attributes()).concat("\nReason: ")); return result;} 
 		catch (Exception e) { Logger.severe("Couldn't Delete: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 	

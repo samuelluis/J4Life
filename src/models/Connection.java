@@ -14,14 +14,9 @@ public class Connection {
 	private java.sql.Connection connection;
 	
 	private Connection(){
-		try{
-			Class.forName("org.sqlite.JDBC");
-			connection = DriverManager.getConnection("jdbc:sqlite:J4Life.db");
-			Logger.fine("Database was Successfully Connected!");
-			migrate();
-		}catch(Exception e){
-			Logger.severe("Error to Connect Database: ".concat(e.toString()));
-		}
+		connect();
+		migrate();
+		close();
 	}
 	
 	public static Connection getConnection(){
@@ -46,12 +41,51 @@ public class Connection {
 		if(runSeed) Seed.seed();
 	}
 	
-	public void excecuteUpdate(String sql) throws SQLException{
-		connection.createStatement().executeUpdate(sql);
+	public boolean executeUpdate(String sql){
+		return executeUpdate(sql, null);
 	}
 	
-	public ResultSet excecuteQuery(String sql) throws SQLException{
-		return connection.createStatement().executeQuery(sql);
+	public ResultSet executeQuery(String sql){
+		return executeQuery(sql, null);
+	}
+	
+	public boolean executeUpdate(String sql, String catchStr){
+		boolean result = false;
+		try {
+			connect();
+			connection.createStatement().executeUpdate(sql);
+			result = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			result = false;
+		}
+		finally{
+			close();
+		}
+		return result;
+	}
+	
+	public ResultSet executeQuery(String sql, String catchStr){
+		try {
+			connect();
+			return connection.createStatement().executeQuery(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally{
+			close();
+		}
+		return null;
+	}
+	
+	public void connect(){
+		try{
+			Class.forName("org.sqlite.JDBC");
+			connection = DriverManager.getConnection("jdbc:sqlite:J4Life.db");
+			Logger.fine("Database was Successfully Connected!");
+		}catch(Exception e){
+			Logger.severe("Error to Connect Database: ".concat(e.toString()));
+		}
 	}
 	
 	public void close(){

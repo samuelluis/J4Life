@@ -37,8 +37,8 @@ public class Tag implements IModel {
 	
 	private void afterSave() {
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select max(id) from tags");
-			id = result.getInt(1);
+			ResultSet result = Connection.getConnection().executeQuery("select max(id) from tags");
+			if(result!=null) id = result.getInt(1);
 			Tag tag = Tag.find(id);
 			this.createdAt = tag.createdAt;
 			this.updatedAt = tag.updatedAt;
@@ -59,7 +59,7 @@ public class Tag implements IModel {
 	}
 
 	public boolean addProduct(int productId){
-		try { Connection.getConnection().excecuteUpdate("insert into products_tags(`tag_id`,`product_id`) values("+id+","+productId+")"); return true; }
+		try { boolean result = Connection.getConnection().executeUpdate("insert into products_tags(`tag_id`,`product_id`) values("+id+","+productId+")", "Couldn't Add Product: ".concat(productId+"").concat("\nReason: ")); return result; }
 		catch (Exception e) { Logger.severe("Couldn't Add Product: ".concat(productId+"").concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 	
@@ -68,7 +68,7 @@ public class Tag implements IModel {
 	}
 
 	public boolean removeProduct(int productId){
-		try { Connection.getConnection().excecuteUpdate("delete from products_tags where tag_id="+id+" and product_id="+productId); return true; }
+		try { boolean result = Connection.getConnection().executeUpdate("delete from products_tags where tag_id="+id+" and product_id="+productId, "Couldn't Remove Product: ".concat(productId+"").concat("\nReason: ")); return result; }
 		catch (Exception e) { Logger.severe("Couldn't Remove Product: ".concat(productId+"").concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 
@@ -91,8 +91,8 @@ public class Tag implements IModel {
 	public static Tag find(int id){
 		Tag tag = new Tag();
 		try { 
-			ResultSet result = Connection.getConnection().excecuteQuery("select * from tags where id="+id);
-			if(result.next()){
+			ResultSet result = Connection.getConnection().executeQuery("select * from tags where id="+id, "Couldn't complete the search of Tag: ");
+			if(result!=null && result.next()){
 				tag.id = id;
 				tag.name = result.getString("name");
 				tag.createdAt = result.getDate("created_at");
@@ -109,8 +109,8 @@ public class Tag implements IModel {
 	public static List<Tag> all(){
 		List<Tag> tags = new ArrayList<Tag>();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select id from tags");
-			while(result.next()) tags.add(find(result.getInt("id")));
+			ResultSet result = Connection.getConnection().executeQuery("select id from tags", "Couldn't complete the search of Tags: ");
+			while(result!=null && result.next()) tags.add(find(result.getInt("id")));
 		} catch (Exception e) { Logger.severe("Couldn't complete the search of Tags: "+e.toString()); }
 		return tags;
 	}
@@ -118,8 +118,8 @@ public class Tag implements IModel {
 	public List<Product> getProducts(){
 		List<Product> products = new ArrayList<Product>();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select product_id from products_tags where tag_id="+id);
-			while(result.next()) products.add(Product.find(result.getInt("product_id")));
+			ResultSet result = Connection.getConnection().executeQuery("select product_id from products_tags where tag_id="+id, "Couldn't complete the search of Products: ");
+			while(result!=null && result.next()) products.add(Product.find(result.getInt("product_id")));
 		} catch (Exception e) { Logger.severe("Couldn't complete the search of Products: "+e.toString()); }
 		return products;
 	}
@@ -129,13 +129,13 @@ public class Tag implements IModel {
 		String sql = "";
 		if(id==0) sql = "insert into tags(`name`,`created_at`,`updated_at`) values('"+name+"','"+DateHelper.getDateTimeString(new Date())+"','"+DateHelper.getDateTimeString(new Date())+"')";
 		else sql = "update tags set name='"+name+"', updated_at='"+DateHelper.getDateTimeString(new Date())+"' where id="+id;
-		try { Connection.getConnection().excecuteUpdate(sql); if(id==0) afterSave(); return true; }
+		try { boolean result = Connection.getConnection().executeUpdate(sql, "Couldn't Save: ".concat(attributes()).concat("\nReason: ")); if(result && id==0) afterSave(); return result; }
 		catch (Exception e) { Logger.severe("Couldn't Save: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 
 	@Override
 	public boolean destroy() {
-		try { Connection.getConnection().excecuteUpdate("delete from tags where id="+id); return true; }
+		try { boolean result = Connection.getConnection().executeUpdate("delete from tags where id="+id, "Couldn't Delete: ".concat(attributes()).concat("\nReason: ")); return result; }
 		catch (Exception e) { Logger.severe("Couldn't Delete: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 	

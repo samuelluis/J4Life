@@ -65,8 +65,8 @@ public class State implements IModel {
 
 	private void afterSave() {
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select max(id) from states");
-			id = result.getInt(1);
+			ResultSet result = Connection.getConnection().executeQuery("select max(id) from states");
+			if(result!=null) id = result.getInt(1);
 			State state = State.find(id);
 			this.createdAt = state.createdAt;
 			this.updatedAt = state.updatedAt;
@@ -125,8 +125,8 @@ public class State implements IModel {
 	public static State find(int id){
 		State state = new State();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select * from states where id = " + id);
-			if(result.next()){
+			ResultSet result = Connection.getConnection().executeQuery("select * from states where id = " + id, "Couldn't complete the search of State: ");
+			if(result!=null && result.next()){
 				state.id = id;
 				state.name = result.getString("name");
 				state.alias = result.getString("alias");
@@ -146,8 +146,8 @@ public class State implements IModel {
 	public static List<State> all(){
 		List<State> states = new ArrayList<State>();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select id from states");
-			while(result.next()) states.add(find(result.getInt("id")));
+			ResultSet result = Connection.getConnection().executeQuery("select id from states", "Couldn't complete the search of States: ");
+			while(result!=null && result.next()) states.add(find(result.getInt("id")));
 		} catch (Exception e) { Logger.severe("Couldn't complete the search of States: "+e.toString()); }
 		return states;
 	}
@@ -155,8 +155,8 @@ public class State implements IModel {
 	public List<City> getCities(){
 		List<City> cities = new ArrayList<City>();
 		try {
-			ResultSet result = Connection.getConnection().excecuteQuery("select id from cities where state_id="+id);
-			while(result.next()) cities.add(City.find(result.getInt("id")));
+			ResultSet result = Connection.getConnection().executeQuery("select id from cities where state_id="+id, "Couldn't complete the search of Cities: ");
+			while(result!=null && result.next()) cities.add(City.find(result.getInt("id")));
 		} catch (Exception e) { Logger.severe("Couldn't complete the search of Cities: "+e.toString()); }
 		return cities;
 	}
@@ -166,13 +166,13 @@ public class State implements IModel {
 		String sql = "";
 		if(id == 0) sql = "insert into states(`name`,`alias`,`country_id`,`created_at`,`updated_at`) values('"+name+"','"+alias+"',"+countryId+",'"+DateHelper.getDateTimeString(new Date())+"','"+DateHelper.getDateTimeString(new Date())+"')";
 		else sql = "update states set name='"+name+"', alias='"+alias+"', country_id="+countryId+", updated_at='"+DateHelper.getDateTimeString(new Date())+"' where id="+id;
-		try{Connection.getConnection().excecuteUpdate(sql); if(id == 0) afterSave(); return true;}
+		try{boolean result = Connection.getConnection().executeUpdate(sql, "Couldn't Save: ".concat(attributes()).concat("\nReason: ")); if(result && id == 0) afterSave(); return result;}
 		catch (Exception e) { Logger.severe("Couldn't Save: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 
 	@Override
 	public boolean destroy() {
-		try {Connection.getConnection().excecuteUpdate("delete from states where id="+id); return true;} 
+		try {boolean result = Connection.getConnection().executeUpdate("delete from states where id="+id, "Couldn't Delete: ".concat(attributes()).concat("\nReason: ")); return result;} 
 		catch (Exception e) { Logger.severe("Couldn't Delete: ".concat(attributes()).concat("\nReason: ".concat(e.toString()))); return false;}
 	}
 	

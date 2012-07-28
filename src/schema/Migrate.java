@@ -106,6 +106,7 @@ public class Migrate extends HashMap<String, String>{
 		")");
 		put("branches","create table branches(" +
 			"id integer primary key autoincrement," +
+			"name varchar(50)," +
 			"address_id integer references address(id)," +
 			"person_id integer references people(id)," +
 			"created_at datetime," +
@@ -135,6 +136,7 @@ public class Migrate extends HashMap<String, String>{
 		put("partners","create table partners(" +
 			"id integer primary key autoincrement," +
 			"code varchar(50)," +
+			"person_id integer references people(id)," +
 			"created_at datetime," +
 			"updated_at datetime" +
 		")");
